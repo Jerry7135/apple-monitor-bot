@@ -17,7 +17,7 @@ LINE_ACCESS_TOKEN = os.getenv("LINE_ACCESS_TOKEN")
 TARGET_URL = "https://www.apple.com/tw/shop/refurbished/mac"
 
 # 關鍵字設定
-KEYWORD_TARGET = "13吋 MacBook Air M4 整修品" #"14 吋 MacBook Pro"
+KEYWORD_TARGET = "14 吋 MacBook Pro" #"14 吋 MacBook Pro"
 
 # 檢查頻率（秒）：1800 秒 = 30 分鐘 (若要搶手動改為 300)
 CHECK_INTERVAL = 600 
