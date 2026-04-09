@@ -12,7 +12,7 @@ LINE_ACCESS_TOKEN = os.getenv("LINE_ACCESS_TOKEN")
 TARGET_URL = "https://www.apple.com/tw/shop/refurbished/mac"
 
 # 測試時先用架上現有的商品 (例如 "13吋 MacBook Air")，確定會響再改回 M4
-KEYWORD_TARGET = "13吋 MacBook Air" #"14 吋 MacBook Pro""13吋 MacBook Air M4"
+KEYWORD_TARGET = "24 吋 iMac Apple M4 晶片配備" #"14 吋 MacBook Pro""13吋 MacBook Air M4"
 # ------------------
 
 def send_line_message(msg):
