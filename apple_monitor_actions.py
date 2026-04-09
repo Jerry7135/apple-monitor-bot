@@ -5,21 +5,36 @@ import random
 import re
 import os
 
-# --- 使用者設定區 (從 GitHub Secrets 讀取) ---
-LINE_ACCESS_TOKEN = os.getenv("LINE_ACCESS_TOKEN")
+# --- 雲端版使用者設定區 ---
+# 從 GitHub Secrets 讀取 Token
+LINE_ACCESS_TOKEN = os.getenv("LINE_ACCESS_TOKEN") 
+
 TARGET_URL = "https://www.apple.com/tw/shop/refurbished/mac"
-KEYWORD_TARGET = "24 吋 iMac Apple M4 晶片" #13吋 MacBook Air M4
+
+# 測試時先用架上現有的商品 (例如 "13吋 MacBook Air")，確定會響再改回 M4
+KEYWORD_TARGET = "13吋 MacBook Air" #"14 吋 MacBook Pro""13吋 MacBook Air M4"
 # ------------------
 
 def send_line_message(msg):
+    # 如果根本沒抓到 Token，直接印出警告
+    if not LINE_ACCESS_TOKEN:
+        print("❌ 致命錯誤：找不到 LINE_ACCESS_TOKEN！請確認 GitHub Secrets 是否有正確設定。")
+        return
+
     url = "https://api.line.me/v2/bot/message/broadcast"
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {LINE_ACCESS_TOKEN}"}
     payload = {"messages": [{"type": "text", "text": msg}]}
-    try:
-        res = requests.post(url, headers=headers, data=json.dumps(payload), timeout=10)
-        print(f"LINE 發送狀態: {res.status_code}")
-    except Exception as e:
-        print(f"LINE 發送錯誤: {e}")
+    
+    try: 
+        print("準備發送 LINE 通知...")
+        response = requests.post(url, headers=headers, data=json.dumps(payload), timeout=10)
+        # 加上詳細的狀態碼回報，讓我們知道有沒有傳送成功
+        if response.status_code == 200:
+            print("✅ LINE 廣播發送成功！")
+        else:
+            print(f"❌ LINE 發送失敗，錯誤碼: {response.status_code}, 內容: {response.text}")
+    except Exception as e: 
+        print(f"⚠️ 發送 LINE 時發生網路異常: {e}")
 
 def get_headers():
     user_agents = [
@@ -33,32 +48,41 @@ def get_headers():
     }
 
 def main():
-    print(f"🚀 Apple 雲端巡邏啟動 (單次掃描模式)")
+    print(f"🚀 Apple 雲端破窗版啟動 (單次掃描)")
+    print(f"📍 目標: {KEYWORD_TARGET}")
+    
+    session = requests.Session()
     
     try:
-        # 模擬真人隨機延遲，避免 GitHub 固定 IP 被 Apple 瞬間偵測
-        time.sleep(random.uniform(2, 5))
+        print(f"[{time.strftime('%H:%M:%S')}] 🕵️ 正在讀取網頁原始碼...")
+        # 增加隨機微小延遲，避免被防火牆秒殺
+        time.sleep(random.uniform(1.5, 4.0))
         
-        response = requests.get(TARGET_URL, headers=get_headers(), timeout=30)
+        response = session.get(TARGET_URL, headers=get_headers(), timeout=20)
         html_content = response.text
         
+        # 最暴力的解法：直接搜尋字串
         if KEYWORD_TARGET.upper() in html_content.upper():
-            print("🚨 發現目標！")
+            print("🚨 發現目標！準備執行發報程序！")
             
-            # 挖出完整名稱
             full_name = KEYWORD_TARGET
             match = re.search(rf'"productTitle":"([^"]*{KEYWORD_TARGET}[^"]*)"', html_content, re.IGNORECASE)
             if match:
                 full_name = match.group(1)
             
-            msg = f"🔥 [雲端報] 官網出現目標！\n\n機型：{full_name}\n🛒 搶購連結：{TARGET_URL}"
+            msg = f"🔥 [雲端警報] 官網出現目標！\n\n發現機型：{full_name}\n\n🛒 點擊立刻前往搶購：\n{TARGET_URL}"
             send_line_message(msg)
+                
         else:
-            print("❌ 尚未發現目標。")
+            print("❌ 網頁原始碼中未發現目標...")
+            # 【偵錯神器】如果找不到目標，印出網頁標題，確認我們有沒有被蘋果擋在門外
+            title_match = re.search(r'<title>(.*?)</title>', html_content, re.IGNORECASE)
+            if title_match:
+                print(f"💡 (雲端機器人目前看到的網頁標題是: {title_match.group(1)})")
 
     except Exception as e:
-        print(f"⚠️ 掃描發生錯誤: {e}")
+        print(f"⚠️ 連線發生錯誤: {e}")
 
 if __name__ == "__main__":
     main()
-    print("✅ 巡邏任務完成，正在關閉雲端環境。")
+    print("✅ 巡邏任務完成，雲端容器即將關閉。")
