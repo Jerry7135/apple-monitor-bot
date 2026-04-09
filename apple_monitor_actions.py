@@ -8,7 +8,7 @@ import os
 # --- 使用者設定區 (從 GitHub Secrets 讀取) ---
 LINE_ACCESS_TOKEN = os.getenv("LINE_ACCESS_TOKEN")
 TARGET_URL = "https://www.apple.com/tw/shop/refurbished/mac"
-KEYWORD_TARGET = "24 吋 iMac Apple M4 晶片(整修品)" #13吋 MacBook Air M4
+KEYWORD_TARGET = "24 吋 iMac Apple M4 晶片" #13吋 MacBook Air M4
 # ------------------
 
 def send_line_message(msg):
