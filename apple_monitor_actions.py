@@ -12,7 +12,7 @@ LINE_ACCESS_TOKEN = os.getenv("LINE_ACCESS_TOKEN")
 TARGET_URL = "https://www.apple.com/tw/shop/refurbished/mac"
 
 # 目標關鍵字
-KEYWORD_TARGET = "13 吋 MacBook"#"24 吋 iMac Apple M4""13 吋 MacBook"
+KEYWORD_TARGET = "24 吋 iMac Apple"#"24 吋 iMac Apple M4""13 吋 MacBook"
 # ------------------
 
 def send_line_message(msg):
